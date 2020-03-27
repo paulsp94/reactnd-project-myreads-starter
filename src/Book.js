@@ -4,10 +4,10 @@ import { update } from './BooksAPI';
 export const Book = ({ book, updateBook }) => {
   const { title, authors, imageLinks, shelf } = book;
 
-  const updateStatus = ({ target }) => {
+  const updateStatus = async ({ target }) => {
     const oldShelf = book.shelf;
     if (oldShelf === target.value) return;
-    update(book, target.value);
+    await update(book, target.value);
     updateBook(book.id, oldShelf, target.value);
   };
 
@@ -24,7 +24,7 @@ export const Book = ({ book, updateBook }) => {
             }}
           ></div>
           <div className="book-shelf-changer">
-            <select onChange={updateStatus} value={shelf}>
+            <select onChange={updateStatus} value={shelf || 'none'}>
               <option value="move" disabled>
                 Move to...
               </option>
