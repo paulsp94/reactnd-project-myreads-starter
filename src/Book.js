@@ -1,7 +1,15 @@
 import React from 'react';
+import { update } from './BooksAPI';
 
-export const Book = ({ book }) => {
-  const { title, authors, imageLinks } = book;
+export const Book = ({ book, updateBook }) => {
+  const { title, authors, imageLinks, shelf } = book;
+
+  const updateStatus = ({ target }) => {
+    const oldShelf = book.shelf;
+    if (oldShelf === target.value) return;
+    update(book, target.value);
+    updateBook(book.id, oldShelf, target.value);
+  };
 
   return (
     <li>
@@ -16,7 +24,7 @@ export const Book = ({ book }) => {
             }}
           ></div>
           <div className="book-shelf-changer">
-            <select>
+            <select onChange={updateStatus} value={shelf}>
               <option value="move" disabled>
                 Move to...
               </option>
