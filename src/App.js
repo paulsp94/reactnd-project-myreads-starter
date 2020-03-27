@@ -14,24 +14,25 @@ class BooksApp extends Component {
 
   async componentDidMount() {
     const books = await getAll();
-    console.log(books);
-
     const currentlyReading = books.filter(
       book => book.shelf === 'currentlyReading'
     );
     const wantToRead = books.filter(book => book.shelf === 'wantToRead');
     const read = books.filter(book => book.shelf === 'read');
-
     this.setState({ currentlyReading, wantToRead, read });
   }
 
   updateBook = async (bookId, oldShelf, newShelf) => {
     const updatedOld = this.state[oldShelf].filter(book => book.id !== bookId);
     const updatedBook = await get(bookId);
-    this.setState(oldState => ({
-      [oldShelf]: updatedOld,
-      [newShelf]: [...oldState[newShelf], updatedBook]
-    }));
+    if (newShelf !== 'none') {
+      this.setState(oldState => ({
+        [newShelf]: [...oldState[newShelf], updatedBook]
+      }));
+    }
+    this.setState({
+      [oldShelf]: updatedOld
+    });
   };
 
   render() {
