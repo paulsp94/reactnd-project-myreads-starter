@@ -20,14 +20,22 @@ class SearchBooks extends Component {
       this.setState({ results: Array.isArray(results) ? results : [] })
     );
 
+  directSearch = (query) =>
+    search(query).then((results) =>
+      this.setState({ results: Array.isArray(results) ? results : [] })
+    );
+
   handleChange = ({ target }) => {
+    const firstLetter = this.state.query === '';
     this.setState({ query: target.value });
-    this.debouncedSearch(target.value);
+    firstLetter
+      ? this.directSearch(target.value)
+      : this.debouncedSearch(target.value);
   };
 
   render() {
     const { query, results } = this.state;
-    console.log(results);
+    const { updateBook } = this.props;
 
     return (
       <div className="search-books">
@@ -55,7 +63,7 @@ class SearchBooks extends Component {
         <div className="search-books-results">
           <ol className="books-grid">
             {results.map((book) => (
-              <Book key={book.id} book={book} />
+              <Book key={book.id} book={book} updateBook={updateBook} />
             ))}
           </ol>
         </div>
