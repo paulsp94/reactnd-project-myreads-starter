@@ -8,7 +8,7 @@ export const BookShelf = ({ title, books }) => {
       <div className="bookshelf-books">
         <ol className="books-grid">
           {books.map(book => (
-            <Book book={book} />
+            <Book book={book} key={book.id} />
           ))}
         </ol>
       </div>
