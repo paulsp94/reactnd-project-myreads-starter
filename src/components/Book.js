@@ -1,14 +1,11 @@
 import React from 'react';
-import { update } from './BooksAPI';
 
 export const Book = ({ book, updateBook }) => {
   const { title, authors, imageLinks, shelf } = book;
 
   const updateStatus = async ({ target }) => {
-    const oldShelf = book.shelf;
-    if (oldShelf === target.value) return;
-    await update(book, target.value);
-    updateBook(book.id, oldShelf, target.value);
+    if (book.shelf === target.value) return;
+    updateBook(book, target.value, book.shelf);
   };
 
   return (
@@ -20,7 +17,9 @@ export const Book = ({ book, updateBook }) => {
             style={{
               width: 128,
               height: 193,
-              backgroundImage: `url(${imageLinks.smallThumbnail})`,
+              backgroundImage: `url(${
+                imageLinks ? imageLinks.smallThumbnail : ''
+              })`,
             }}
           ></div>
           <div className="book-shelf-changer">

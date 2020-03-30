@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { search } from './BooksAPI';
+import { search } from '../BooksAPI';
 import { Book } from './Book';
-import { debounce } from './utils/debounce';
+import { debounce } from '../utils/debounce';
 
 class SearchBooks extends Component {
   constructor(props) {
@@ -11,18 +11,23 @@ class SearchBooks extends Component {
       query: '',
       results: [],
     };
-    this.debouncedSearch = debounce(this.debouncedSearch, 200);
+    this.debouncedSearch = debounce(this.directSearch, 200);
     this.handleChange = this.handleChange.bind(this);
   }
 
-  debouncedSearch = (query) =>
-    search(query).then((results) =>
-      this.setState({ results: Array.isArray(results) ? results : [] })
-    );
+  addShelfInfo = (results) => {
+    const { idBooks } = this.props;
+    return results.map((result) => {
+      const book = idBooks[result.id];
+      return book ? book : result;
+    });
+  };
 
   directSearch = (query) =>
     search(query).then((results) =>
-      this.setState({ results: Array.isArray(results) ? results : [] })
+      this.setState({
+        results: Array.isArray(results) ? this.addShelfInfo(results) : [],
+      })
     );
 
   handleChange = ({ target }) => {
@@ -33,9 +38,17 @@ class SearchBooks extends Component {
       : this.debouncedSearch(target.value);
   };
 
+  updateHandler = (book, newShelf, oldShelf) => {
+    this.setState(({ results }) => ({
+      results: results.map((result) =>
+        result.id === book.id ? { ...book, shelf: newShelf } : result
+      ),
+    }));
+    this.props.updateBook(book, newShelf, oldShelf);
+  };
+
   render() {
     const { query, results } = this.state;
-    const { updateBook } = this.props;
 
     return (
       <div className="search-books">
@@ -63,9 +76,12 @@ class SearchBooks extends Component {
         <div className="search-books-results">
           <ol className="books-grid">
             {results.map((book) => (
-              <Book key={book.id} book={book} updateBook={updateBook} />
+              <Book key={book.id} book={book} updateBook={this.updateHandler} />
             ))}
           </ol>
+          {!!query && !!results && (
+            <span>No results found. Please try a different query.</span>
+          )}
         </div>
       </div>
     );

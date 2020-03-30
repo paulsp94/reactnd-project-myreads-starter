@@ -1,40 +1,70 @@
 import React, { Component } from 'react';
 import { Route } from 'react-router-dom';
-import { getAll, get } from './BooksAPI';
-import { SearchBooks } from './SearchBooks';
-import { MyReads } from './MyReads';
+import { getAll, update, get } from './BooksAPI';
+import { SearchBooks } from './components/SearchBooks';
+import { MyReads } from './components/MyReads';
 import './App.css';
 
 class BooksApp extends Component {
   state = {
-    books: []
+    idBooks: {},
+    currentlyReading: [],
+    wantToRead: [],
+    read: [],
   };
 
   async componentDidMount() {
-    getAll().then(books => this.setState({ books }));
+    const books = await getAll();
+    const idBooks = {};
+    const shelfs = { currentlyReading: [], wantToRead: [], read: [] };
+    books.forEach((book) => {
+      shelfs[book.shelf].push(book);
+      idBooks[book.id] = book;
+    });
+    this.setState({ ...shelfs, books, idBooks });
   }
 
-  updateBook = async (bookId, oldShelf, newShelf) => {
-    const updatedBook = await get(bookId);
-    this.setState(({ books }) => {
-      const restBooks = this.state.books.filter(book => book.id !== bookId);
-      if (updatedBook.shelf === 'none') return { books: restBooks };
-      return { books: [...restBooks, updatedBook] };
-    });
+  updateBook = async (book, newShelf, oldShelf) => {
+    const { idBooks } = this.state;
+    await update(book, newShelf);
+    const newBook = await get(book.id);
+    const newIdBooks = idBooks;
+    newIdBooks[book.id] = newBook;
+    this.setState({ idBooks: newIdBooks });
+
+    if (oldShelf !== 'none' && oldShelf !== undefined) {
+      this.setState(({ [oldShelf]: shelf }) => ({
+        [oldShelf]: shelf.filter((item) => item.id !== book.id),
+      }));
+    }
+    if (newShelf !== 'none') {
+      this.setState(({ [newShelf]: shelf }) => ({
+        [newShelf]: [...shelf, newBook],
+      }));
+    }
   };
 
   render() {
-    const { books } = this.state;
+    const { currentlyReading, wantToRead, read, idBooks } = this.state;
     return (
       <div className="app">
         <Route
           exact
           path="/"
-          render={() => <MyReads books={books} updateBook={this.updateBook} />}
+          render={() => (
+            <MyReads
+              currentlyReading={currentlyReading}
+              wantToRead={wantToRead}
+              read={read}
+              updateBook={this.updateBook}
+            />
+          )}
         />
         <Route
           path="/search"
-          render={() => <SearchBooks updateBook={this.updateBook} />}
+          render={() => (
+            <SearchBooks idBooks={idBooks} updateBook={this.updateBook} />
+          )}
         />
       </div>
     );
