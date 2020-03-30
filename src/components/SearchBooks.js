@@ -23,12 +23,14 @@ class SearchBooks extends Component {
     });
   };
 
-  directSearch = (query) =>
+  directSearch = (query) => {
+    if (query === '') return;
     search(query).then((results) =>
       this.setState({
         results: Array.isArray(results) ? this.addShelfInfo(results) : [],
       })
     );
+  };
 
   handleChange = ({ target }) => {
     const firstLetter = this.state.query === '';
