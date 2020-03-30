@@ -20,8 +20,12 @@ export const Book = ({ book, updateBook }) => {
               backgroundImage: `url(${
                 imageLinks ? imageLinks.smallThumbnail : ''
               })`,
+              textAlign: 'center',
+              paddingTop: 65,
             }}
-          ></div>
+          >
+            {!imageLinks && 'No Cover available'}
+          </div>
           <div className="book-shelf-changer">
             <select onChange={updateStatus} value={shelf || 'none'}>
               <option value="move" disabled>
