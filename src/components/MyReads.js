@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { BookShelf } from './BookShelf';
@@ -27,5 +28,12 @@ const MyReads = ({ currentlyReading, wantToRead, read, updateBook }) => (
     </Link>
   </div>
 );
+
+MyReads.propTypes = {
+  currentlyReading: PropTypes.array,
+  read: PropTypes.array,
+  wantToRead: PropTypes.array,
+  updateBook: PropTypes.func,
+};
 
 export { MyReads };

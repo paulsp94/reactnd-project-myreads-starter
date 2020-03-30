@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 
 export const Book = ({ book, updateBook }) => {
@@ -45,4 +46,9 @@ export const Book = ({ book, updateBook }) => {
       </div>
     </li>
   );
+};
+
+Book.propTypes = {
+  book: PropTypes.object,
+  updateBook: PropTypes.func,
 };

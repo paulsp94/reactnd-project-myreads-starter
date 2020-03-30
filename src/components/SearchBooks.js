@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { search } from '../BooksAPI';
@@ -89,5 +90,10 @@ class SearchBooks extends Component {
     );
   }
 }
+
+SearchBooks.propTypes = {
+  idBooks: PropTypes.object,
+  updateBook: PropTypes.func,
+};
 
 export { SearchBooks };
